@@ -348,13 +348,13 @@ if __name__ == '__main__':
     test_name = 'test'
 
     if args.dataset == 'taobao':
-        path = '../data/taobao_data/'
+        path = '/content/dataset/ComiRec/data/taobao_data/'
         item_count = 1708531
         batch_size = 256
         maxlen = 50
         test_iter = 500
     elif args.dataset == 'book':
-        path = '../data/book_data/'
+        path = '/content/dataset/ComiRec/data/book_data/'
         item_count = 367983
         batch_size = 128
         maxlen = 20
