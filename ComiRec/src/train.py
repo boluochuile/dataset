@@ -62,12 +62,8 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
 
     item_embs = model.output_item(sess)
 
-    res = faiss.StandardGpuResources()
-    flat_config = faiss.GpuIndexFlatConfig()
-    flat_config.device = 0
-
     try:
-        gpu_index = faiss.GpuIndexFlatIP(res, args.embedding_dim, flat_config)
+        gpu_index = faiss.IndexFlatL2(args.embedding_dim)
         gpu_index.add(item_embs)
     except Exception as e:
         return {}
