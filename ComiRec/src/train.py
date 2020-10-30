@@ -22,13 +22,13 @@ parser.add_argument('--dataset', type=str, default='book', help='book | taobao')
 parser.add_argument('--random_seed', type=int, default=19)
 parser.add_argument('--embedding_dim', type=int, default=64)
 parser.add_argument('--hidden_size', type=int, default=64)
-parser.add_argument('--num_interest', type=int, default=4)
+parser.add_argument('--num_interest', type=int, default=6)
 parser.add_argument('--model_type', type=str, default='none', help='DNN | GRU4REC | ..')
 parser.add_argument('--learning_rate', type=float, default=0.001, help='')
 parser.add_argument('--max_iter', type=int, default=1000, help='(k)')
 parser.add_argument('--patience', type=int, default=50)
 parser.add_argument('--coef', default=None)
-parser.add_argument('--topN', type=int, default=50)
+parser.add_argument('--topN', type=int, default=20)
 
 best_metric = 0
 
