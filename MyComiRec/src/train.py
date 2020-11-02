@@ -66,7 +66,7 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
     for (i, item) in enumerate(item_embs):
         annoy_index.add_item(i, item)
 
-    annoy_index.buid(20)
+    annoy_index.build(20)
     annoy_index.save('item_embs.ann')
 
     item_embs_index = AnnoyIndex(args.embedding_dim, 'angular')
