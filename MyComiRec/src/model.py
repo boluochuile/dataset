@@ -137,7 +137,7 @@ class Model_ComiRec_SA(Model):
         item_list_emb = tf.reshape(self.item_his_eb, [-1, seq_len, embedding_dim])
 
         if add_pos:
-            self.position_embedding = positional_encoding(embedding_dim, seq_len)
+            self.position_embedding = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
             item_list_add_pos = item_list_emb + tf.tile(self.position_embedding, [tf.shape(item_list_emb)[0], 1, 1])
         else:
             item_list_add_pos = item_list_emb
