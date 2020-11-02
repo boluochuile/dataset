@@ -63,15 +63,16 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
     item_embs = model.output_item(sess)
 
     annoy_index = AnnoyIndex(args.embedding_dim, 'angular')  # Length of item vector that will be indexed
+    for (i, item) in enumerate(item_embs):
+        annoy_index.add_item(i, item)
+
     annoy_index.buid(20)
     annoy_index.save('item_embs.ann')
 
     item_embs_index = AnnoyIndex(args.embedding_dim, 'angular')
     item_embs_index.load('item_embs.ann')  # super fast, will just mmap the file
 
-    for (i, item) in enumerate(item_embs):
-        annoy_index.add_item(i, item)
-
+    
     total = 0
     total_recall = 0.0
     total_ndcg = 0.0
