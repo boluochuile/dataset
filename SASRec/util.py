@@ -8,7 +8,6 @@ from collections import defaultdict
 def data_partition(fname, flag='train'):
     usernum = 0
     itemnum = 0
-    # https://www.jianshu.com/p/bbd258f99fd3 python中defaultdict用法详解
     User = defaultdict(list)
     # assume user/item index starting from 1
     if flag == 'train':
@@ -30,9 +29,6 @@ def data_partition(fname, flag='train'):
 
 
 def evaluate(model, dataset, args, sess):
-    """
-    测试
-    """
     [users, usernum, itemnum] = copy.deepcopy(dataset)
 
     NDCG = 0.0
@@ -44,7 +40,7 @@ def evaluate(model, dataset, args, sess):
         if len(users[u]) < 1: continue
 
         seq = np.zeros([args.maxlen], dtype=np.int32)
-        # 当前u的下一个要预测的item
+
         user_len = len(users[u])
         item_idx = [users[u][user_len - 1]]
 
@@ -56,21 +52,12 @@ def evaluate(model, dataset, args, sess):
 
         rated = set(users[u])
         rated.add(0)
-        # 随机选出100个负样本测试item
+
         for _ in range(100):
             t = np.random.randint(1, itemnum + 1)
             while t in rated: t = np.random.randint(1, itemnum + 1)
             item_idx.append(t)
 
-        """
-        self.test_item = tf.placeholder(tf.int32, shape=(101))
-        test_item_emb = tf.nn.embedding_lookup(item_emb_table, self.test_item)
-        self.test_logits = tf.matmul(seq_emb, tf.transpose(test_item_emb))
-        # (b, maxlen, 101)
-        self.test_logits = tf.reshape(self.test_logits, [tf.shape(self.input_seq)[0], args.maxlen, 101])
-        # 预测结果
-        self.test_logits = self.test_logits[:, -1, :]
-        """
         # return sess.run(self.test_logits,
         #                         {self.u: u, self.input_seq: seq, self.test_item: item_idx, self.is_training: False})
         predictions = -model.predict(sess, [u], [seq], item_idx)
