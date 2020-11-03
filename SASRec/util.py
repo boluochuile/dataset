@@ -13,8 +13,8 @@ def data_partition(fname, flag='train'):
     # assume user/item index starting from 1
     if flag == 'train':
         f = open('/content/dataset/SASRec/data/%s_data/%s_train.txt' % (fname, fname), 'r')
-    elif flag == 'vaild':
-        f = open('/content/dataset/SASRec/data/%s_data/%s_vaild.txt' % (fname, fname), 'r')
+    elif flag == 'valid':
+        f = open('/content/dataset/SASRec/data/%s_data/%s_valid.txt' % (fname, fname), 'r')
     else:
         f = open('/content/dataset/SASRec/data/%s_data/%s_test.txt' % (fname, fname), 'r')
     for line in f:
