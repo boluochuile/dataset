@@ -7,11 +7,11 @@ import shutil
 import sys
 import time
 from collections import defaultdict
-from annoy import AnnoyIndex
+# from annoy import AnnoyIndex
 
 import numpy as np
 
-# import faiss
+import faiss
 from data_iterator import DataIterator
 from model import *
 from tensorboardX import SummaryWriter
@@ -22,7 +22,7 @@ parser.add_argument('--dataset', type=str, default='ml-1m', help='book | ml-1m')
 parser.add_argument('--random_seed', type=int, default=19)
 parser.add_argument('--embedding_dim', type=int, default=64)
 parser.add_argument('--hidden_size', type=int, default=64)
-parser.add_argument('--num_interest', type=int, default=4)
+parser.add_argument('--num_interest', type=int, default=6)
 parser.add_argument('--model_type', type=str, default='none', help='DNN | GRU4REC | ..')
 parser.add_argument('--learning_rate', type=float, default=0.001, help='')
 parser.add_argument('--max_iter', type=int, default=100, help='(k)')
@@ -62,15 +62,20 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
 
     item_embs = model.output_item(sess)
 
-    annoy_index = AnnoyIndex(args.embedding_dim, 'angular')  # Length of item vector that will be indexed
-    for (i, item) in enumerate(item_embs):
-        annoy_index.add_item(i, item)
+    # annoy_index = AnnoyIndex(args.embedding_dim, 'angular')  # Length of item vector that will be indexed
+    # for (i, item) in enumerate(item_embs):
+    #     annoy_index.add_item(i, item)
 
-    annoy_index.build(20)
-    annoy_index.save('item_embs.ann')
+    # annoy_index.build(20)
+    # annoy_index.save('item_embs.ann')
 
-    item_embs_index = AnnoyIndex(args.embedding_dim, 'angular')
-    item_embs_index.load('item_embs.ann')  # super fast, will just mmap the file
+    # item_embs_index = AnnoyIndex(args.embedding_dim, 'angular')
+    # item_embs_index.load('item_embs.ann')  # super fast, will just mmap the file
+    try:
+        gpu_index = faiss.IndexFlatL2(args.embedding_dim)
+        gpu_index.add(item_embs)
+    except Exception as e:
+        return {}
 
     
     total = 0
@@ -87,7 +92,8 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
         # 多个兴趣表示[num_heads, embedding_dim]
         if len(user_embs.shape) == 2:
             # I: itemList    D:distance
-            I, D = item_embs_index.get_nns_by_vector(user_embs, topN, include_distances=True)
+            # I, D = item_embs_index.get_nns_by_vector(user_embs, topN, include_distances=True)
+            D, I = gpu_index.search(user_embs, topN)
             for i, iid_list in enumerate(item_id):
                 recall = 0
                 dcg = 0.0
@@ -108,7 +114,8 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
         else:
             ni = user_embs.shape[1]
             user_embs = np.reshape(user_embs, [-1, user_embs.shape[-1]])
-            I, D = item_embs_index.get_nns_by_vector(user_embs, topN, include_distances=True)
+            # I, D = item_embs_index.get_nns_by_vector(user_embs, topN, include_distances=True)
+            D, I = gpu_index.search(user_embs, topN)
             for i, iid_list in enumerate(item_id):
                 recall = 0
                 dcg = 0.0
