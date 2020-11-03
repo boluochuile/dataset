@@ -369,7 +369,7 @@ if __name__ == '__main__':
         path = '/content/dataset/MyComiRec/data/ml-1m_data/'
         item_count = 3417
     elif args.dataset == 'ml-10m':
-        path = '/content/dataset/MyComiRec/data/ml-1m_data/'
+        path = '/content/dataset/MyComiRec/data/ml-10m_data/'
         item_count = 10197
 
     batch_size = args.batch_size
