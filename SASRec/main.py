@@ -34,9 +34,9 @@ with open(os.path.join(args.dataset + '_' + args.train_dir, 'args.txt'), 'w') as
     f.write('\n'.join([str(k) + ',' + str(v) for k, v in sorted(vars(args).items(), key=lambda x: x[0])]))
 f.close()
 
-train_dataset = data_partition(args.dataset + '_train.txt')
-vaild_dataset = data_partition(args.dataset + '_vaild.txt')
-test_dataset = data_partition(args.dataset + '_test.txt')
+train_dataset = data_partition(args.dataset, 'train')
+vaild_dataset = data_partition(args.dataset, 'vaild')
+test_dataset = data_partition(args.dataset, 'test')
 [user_train, usernum, itemnum] = train_dataset
 num_batch = len(user_train) / args.batch_size
 cc = 0.0

@@ -5,13 +5,18 @@ import numpy as np
 from collections import defaultdict
 
 
-def data_partition(fname):
+def data_partition(fname, flag='train'):
     usernum = 0
     itemnum = 0
     # https://www.jianshu.com/p/bbd258f99fd3 python中defaultdict用法详解
     User = defaultdict(list)
     # assume user/item index starting from 1
-    f = open('/content/dataset/SASRec/data/%s_data/%s.txt' % (fname, fname), 'r')
+    if flag == 'train':
+        f = open('/content/dataset/SASRec/data/%s_data/%s_train.txt' % (fname, fname), 'r')
+    elif flag == 'vaild':
+        f = open('/content/dataset/SASRec/data/%s_data/%s_vaild.txt' % (fname, fname), 'r')
+    else:
+        f = open('/content/dataset/SASRec/data/%s_data/%s_test.txt' % (fname, fname), 'r')
     for line in f:
         # 0,773,0
         u, i, timestamp = line.rstrip().split(',')
