@@ -11,7 +11,7 @@ def data_partition(fname):
     # https://www.jianshu.com/p/bbd258f99fd3 python中defaultdict用法详解
     User = defaultdict(list)
     # assume user/item index starting from 1
-    f = open('/content/dataset/SASRec/data/%s.txt' % fname, 'r')
+    f = open('/content/dataset/SASRec/data/%s_data/%s.txt' % (fname, fname), 'r')
     for line in f:
         # 0,773,0
         u, i, timestamp = line.rstrip().split(',')
