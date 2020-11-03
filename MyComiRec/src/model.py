@@ -1,6 +1,6 @@
 import os
 import tensorflow as tf
-from models import positional_encoding
+from modules import positional_encoding
 
 
 class Model(object):
@@ -108,6 +108,17 @@ class Model(object):
         print('model restored from %s' % path)
 
 class Model_DNN(Model):
+    def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, seq_len=256):
+        super(Model_DNN, self).__init__(n_mid, embedding_dim, hidden_size,
+                                           batch_size, seq_len, flag="DNN")
+
+        masks = tf.concat([tf.expand_dims(self.mask, -1) for _ in range(hidden_size)], axis=-1)
+        # item_his_eb: (b, sql_len, embedding_dim) , sum pooling
+        self.item_his_eb_mean = tf.reduce_sum(self.item_his_eb, 1) / (tf.reduce_sum(tf.cast(masks, dtype=tf.float32), 1) + 1e-9)
+        self.user_eb = tf.layers.dense(self.item_his_eb_mean, hidden_size, activation=None)
+        self.build_sampled_softmax_loss(self.item_eb, self.user_eb)
+
+class Model_MSARec(Model):
     def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, seq_len=256):
         super(Model_DNN, self).__init__(n_mid, embedding_dim, hidden_size,
                                            batch_size, seq_len, flag="DNN")

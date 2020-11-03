@@ -34,13 +34,15 @@ with open(os.path.join(args.dataset + '_' + args.train_dir, 'args.txt'), 'w') as
     f.write('\n'.join([str(k) + ',' + str(v) for k, v in sorted(vars(args).items(), key=lambda x: x[0])]))
 f.close()
 
-dataset = data_partition(args.dataset)
-[user_train, user_valid, user_test, usernum, itemnum] = dataset
+train_dataset = data_partition(args.dataset + '_train.txt')
+vaild_dataset = data_partition(args.dataset + '_vaild.txt')
+test_dataset = data_partition(args.dataset + '_test.txt')
+[user_train, usernum, itemnum] = train_dataset
 num_batch = len(user_train) / args.batch_size
 cc = 0.0
 for u in user_train:
     cc += len(user_train[u])
-print 'average sequence length: %.2f' % (cc / len(user_train))
+print ('average sequence length: %.2f' % (cc / len(user_train)))
 
 f = open(os.path.join(args.dataset + '_' + args.train_dir, 'log.txt'), 'w')
 config = tf.ConfigProto()
@@ -67,12 +69,12 @@ try:
         if epoch % 20 == 0:
             t1 = time.time() - t0
             T += t1
-            print 'Evaluating',
-            t_test = evaluate(model, dataset, args, sess)
-            t_valid = evaluate_valid(model, dataset, args, sess)
-            print ''
-            print 'epoch:%d, time: %f(s), valid (NDCG@10: %.4f, HR@10: %.4f), test (NDCG@10: %.4f, HR@10: %.4f)' % (
-            epoch, T, t_valid[0], t_valid[1], t_test[0], t_test[1])
+            print ('Evaluating'),
+            t_test = evaluate(model, test_dataset, args, sess)
+            t_valid = evaluate(model, vaild_dataset, args, sess)
+            print ('')
+            print ('epoch:%d, time: %f(s), valid (NDCG@10: %.4f, HR@10: %.4f), test (NDCG@10: %.4f, HR@10: %.4f)' % (
+            epoch, T, t_valid[0], t_valid[1], t_test[0], t_test[1]))
 
             f.write(str(t_valid) + ' ' + str(t_test) + '\n')
             f.flush()

@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="175ec136-2b6b-4389-995e-8af11edd6c92" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MyComiRec/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MyComiRec/src/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/modules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MyComiRec/src/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MyComiRec/src/util.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/dataset/ml-1m/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/dataset/ml-1m/movies.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/dataset/ml-1m/ratings.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/dataset/ml-1m/users.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/evaluate.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/modules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/train.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec2" beforeDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -19,7 +57,60 @@
     <option name="jreName" value="1.8" />
     <option name="vmOptions" value="-Dmaven.multiModuleProjectDirectory=$MAVEN_HOME -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true" />
   </component>
+  <component name="ProjectId" id="1jlNfPEhKvF0TxSAqOHKurVDpsv" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="fileTemplates" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/SASRec2/data" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ll\Desktop\dataset\SASRec2\data" />
+      <recent name="C:\Users\ll\Desktop\dataset\MyComiRec\SAS" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ll\Desktop\dataset\MyComiRec\SAS" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="175ec136-2b6b-4389-995e-8af11edd6c92" name="Default Changelist" comment="" />
+      <created>1604374820718</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1604374820718</updated>
+      <workItem from="1604374826605" duration="9537000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

@@ -1,7 +1,6 @@
 #coding:utf-8
 import argparse
 import math
-import os
 import random
 import shutil
 import sys
@@ -181,9 +180,11 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
 
 def get_model(dataset, model_type, item_count, batch_size, maxlen):
     if model_type == 'DNN': 
-        model = Model_DNN(item_count, args.embedding_dim, args.hidden_size, batch_size, maxlen)
+        model = Model_DNN(item_count, args.embedding_dim, args.hidden_size, batch_size, args.maxlen)
     elif model_type == 'ComiRec-SA':
-        model = Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, maxlen)
+        model = Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, args.maxlen)
+    elif model_type == 'MSARec':
+        model = Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, args.maxlen)
     else:
         print ("Invalid model_type : %s", model_type)
         return
