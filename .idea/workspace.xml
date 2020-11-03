@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SASRec/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/sas_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/util.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -109,7 +110,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1604374820718</updated>
-      <workItem from="1604374826605" duration="11080000" />
+      <workItem from="1604374826605" duration="11461000" />
     </task>
     <servers />
   </component>

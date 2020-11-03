@@ -3,7 +3,7 @@ import time
 import argparse
 import tensorflow as tf
 from sampler import WarpSampler
-from model import Model
+from sas_model import Model
 from tqdm import tqdm
 from util import *
 
