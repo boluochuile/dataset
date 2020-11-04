@@ -132,7 +132,6 @@ class Model_MSARec(Model):
                  seq_len=256, num_blocks=2):
         super(Model_MSARec, self).__init__(n_mid, embedding_dim, hidden_size,
                                                    batch_size, seq_len, flag="MSARec")
-        self.is_training = tf.placeholder(tf.bool, shape=())
 
         with tf.variable_scope("SASRec", reuse=tf.AUTO_REUSE) as scope:
 
@@ -143,7 +142,7 @@ class Model_MSARec(Model):
             # Dropout
             self.seq = tf.layers.dropout(self.mid_his_batch_embedded,
                                          rate=dropout_rate,
-                                         training=tf.convert_to_tensor(self.is_training))
+                                         training=tf.convert_to_tensor(True))
             self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
 
             # Build blocks
