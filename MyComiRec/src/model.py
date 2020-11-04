@@ -118,17 +118,6 @@ class Model_DNN(Model):
         self.user_eb = tf.layers.dense(self.item_his_eb_mean, hidden_size, activation=None)
         self.build_sampled_softmax_loss(self.item_eb, self.user_eb)
 
-class Model_MSARec(Model):
-    def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, seq_len=256):
-        super(Model_DNN, self).__init__(n_mid, embedding_dim, hidden_size,
-                                           batch_size, seq_len, flag="DNN")
-
-        masks = tf.concat([tf.expand_dims(self.mask, -1) for _ in range(hidden_size)], axis=-1)
-        # item_his_eb: (b, sql_len, embedding_dim) , sum pooling
-        self.item_his_eb_mean = tf.reduce_sum(self.item_his_eb, 1) / (tf.reduce_sum(tf.cast(masks, dtype=tf.float32), 1) + 1e-9)
-        self.user_eb = tf.layers.dense(self.item_his_eb_mean, hidden_size, activation=None)
-        self.build_sampled_softmax_loss(self.item_eb, self.user_eb)
-
 def get_shape(inputs):
     dynamic_shape = tf.shape(inputs)
     static_shape = inputs.get_shape().as_list()
@@ -141,7 +130,7 @@ def get_shape(inputs):
 class Model_MSARec(Model):
     def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, num_interest, dropout_rate=0.2,
                  seq_len=256, num_blocks=2):
-        super(Model_DNN, self).__init__(n_mid, embedding_dim, hidden_size,
+        super(Model_MSARec, self).__init__(n_mid, embedding_dim, hidden_size,
                                                    batch_size, seq_len, flag="MSARec")
         self.is_training = tf.placeholder(tf.bool, shape=())
 
@@ -168,13 +157,13 @@ class Model_MSARec(Model):
                                                    num_units=hidden_size,
                                                    num_heads=num_interest,
                                                    dropout_rate=dropout_rate,
-                                                   is_training=self.is_training,
+                                                   is_training=True,
                                                    causality=True,
                                                    scope="self_attention")
 
                     # Feed forward
                     self.seq = feedforward(normalize(self.seq), num_units=[hidden_size, hidden_size],
-                                           dropout_rate=dropout_rate, is_training=self.is_training)
+                                           dropout_rate=dropout_rate, is_training=True)
                     self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
             # (b, seq_len, dim)
             self.seq = normalize(self.seq)
