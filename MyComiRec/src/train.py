@@ -31,6 +31,8 @@ parser.add_argument('--topN', type=int, default=50)
 parser.add_argument('--test_iter', type=int, default=1000)
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--maxlen', type=int, default=50)
+parser.add_argument('--num_blocks', type=float, default=2)
+parser.add_argument('--dropout_rate', type=float, default=0.2)
 
 best_metric = 0
 
@@ -184,7 +186,8 @@ def get_model(dataset, model_type, item_count, batch_size, maxlen):
     elif model_type == 'ComiRec-SA':
         model = Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, args.maxlen)
     elif model_type == 'MSARec':
-        model = Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, args.maxlen)
+        model = Model_MSARec(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest,
+                             seq_len=args.maxlen, dropout_rate=args.dropout_rate, num_blocks=2)
     else:
         print ("Invalid model_type : %s", model_type)
         return

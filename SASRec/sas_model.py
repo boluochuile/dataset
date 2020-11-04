@@ -64,7 +64,7 @@ class Model():
                     self.seq = feedforward(normalize(self.seq), num_units=[args.hidden_units, args.hidden_units],
                                            dropout_rate=args.dropout_rate, is_training=self.is_training)
                     self.seq *= mask
-
+            # (b, seq_len, dim)
             self.seq = normalize(self.seq)
 
         pos = tf.reshape(pos, [tf.shape(self.input_seq)[0] * args.maxlen])
@@ -110,3 +110,4 @@ class Model():
     def predict(self, sess, u, seq, item_idx):
         return sess.run(self.test_logits,
                         {self.u: u, self.input_seq: seq, self.test_item: item_idx, self.is_training: False})
+

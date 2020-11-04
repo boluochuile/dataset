@@ -79,8 +79,10 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
 
         user_embs = model.output_user(sess, [hist_item, hist_mask])
 
+        # (batch, emb)
         if len(user_embs.shape) == 2:
             D, I = gpu_index.search(user_embs, topN)
+            # item_id_list.append(item_list[k:])
             for i, iid_list in enumerate(item_id):
                 recall = 0
                 dcg = 0.0
@@ -99,16 +101,21 @@ def evaluate_full(sess, test_data, model, model_path, batch_size, item_cate_map,
                 if not save:
                     total_diversity += compute_diversity(I[i], item_cate_map)
         else:
+            # (batch, interest_num, emb)
             ni = user_embs.shape[1]
             user_embs = np.reshape(user_embs, [-1, user_embs.shape[-1]])
+            # I: (len(user_embs), topN)   len(user_embs) = user_num * ni
             D, I = gpu_index.search(user_embs, topN)
             for i, iid_list in enumerate(item_id):
                 recall = 0
                 dcg = 0.0
                 item_list_set = set()
                 if coef is None:
+                    # I[i*ni:(i+1)*ni]: 第i个用户的所有兴趣的召回向量
                     item_list = list(zip(np.reshape(I[i*ni:(i+1)*ni], -1), np.reshape(D[i*ni:(i+1)*ni], -1)))
+                    # 按距离排序
                     item_list.sort(key=lambda x:x[1], reverse=True)
+                    # 讲前TopN个不重复的召回向量存入item_list_set
                     for j in range(len(item_list)):
                         if item_list[j][0] not in item_list_set and item_list[j][0] != 0:
                             item_list_set.add(item_list[j][0])
