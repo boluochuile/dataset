@@ -9,10 +9,7 @@
       <change afterPath="$PROJECT_DIR$/SASRec/data/ml-1m_data/ml-1m_train.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/SASRec/data/ml-1m_data/ml-1m_user_map.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/SASRec/data/ml-1m_data/ml-1m_valid.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataset.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataset.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComiRec/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/ComiRec/src/comi_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComiRec/src/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/ComiRec/src/train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyComiRec/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyComiRec/src/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" afterDir="false" />

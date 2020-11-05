@@ -373,6 +373,12 @@ if __name__ == '__main__':
     if args.dataset == 'ml-1m':
         path = '/content/dataset/MyComiRec/data/ml-1m_data/'
         item_count = 3417
+    elif args.dataset == 'book':
+        path = '/content/dataset/MyComiRec/data/book_data/'
+        item_count = 367983
+        batch_size = 128
+        maxlen = 20
+        test_iter = 1000
     elif args.dataset == 'ml-10m':
         path = '/content/dataset/MyComiRec/data/ml-10m_data/'
         item_count = 10197

@@ -133,7 +133,7 @@ class Model_MSARec(Model):
         super(Model_MSARec, self).__init__(n_mid, embedding_dim, hidden_size,
                                                    batch_size, seq_len, flag="MSARec")
 
-        with tf.variable_scope("SASRec", reuse=tf.AUTO_REUSE) as scope:
+        with tf.variable_scope("MSARec", reuse=tf.AUTO_REUSE) as scope:
 
             # Positional Encoding
             # t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
@@ -213,10 +213,10 @@ class Model_MSARec(Model):
 class Model_MSAK_means(Model):
     def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, num_interest, dropout_rate=0.2,
                  seq_len=256, num_blocks=2):
-        super(Model_MSARec, self).__init__(n_mid, embedding_dim, hidden_size,
-                                                   batch_size, seq_len, flag="MSARec")
+        super(Model_MSAK_means, self).__init__(n_mid, embedding_dim, hidden_size,
+                                                   batch_size, seq_len, flag="Model_MSAK_means")
 
-        with tf.variable_scope("SASRec", reuse=tf.AUTO_REUSE) as scope:
+        with tf.variable_scope("MSAK_means", reuse=tf.AUTO_REUSE) as scope:
 
             # Positional Encoding
             t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
@@ -259,22 +259,47 @@ class Model_MSAK_means(Model):
             num_heads = num_interest
 
 
+class Model_SASRec(Model):
+    def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, num_interest, dropout_rate=0.2,
+                 seq_len=256, num_blocks=2):
+        super(Model_SASRec, self).__init__(n_mid, embedding_dim, hidden_size,
+                                                   batch_size, seq_len, flag="Model_SASRec")
 
+        with tf.variable_scope("SASRec", reuse=tf.AUTO_REUSE) as scope:
 
+            # Positional Encoding
+            t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
+            self.mid_his_batch_embedded += t
 
+            # Dropout
+            # self.seq = tf.layers.dropout(self.mid_his_batch_embedded,
+            #                              rate=dropout_rate,
+            #                              training=tf.convert_to_tensor(True))
+            self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
 
+            # Build blocks
 
+            for i in range(num_blocks):
+                with tf.variable_scope("num_blocks_%d" % i):
 
+                    # Self-attention
+                    self.seq = multihead_attention(queries=normalize(self.seq),
+                                                   keys=self.seq,
+                                                   num_units=hidden_size,
+                                                   num_heads=num_interest,
+                                                   dropout_rate=dropout_rate,
+                                                   is_training=True,
+                                                   causality=True,
+                                                   scope="self_attention")
 
-
-
-
-
-
-
-
-
-
-
-
-
+                    # Feed forward
+                    self.seq = feedforward(normalize(self.seq), num_units=[hidden_size, hidden_size],
+                                           dropout_rate=dropout_rate, is_training=True)
+                    self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
+            # (b, seq_len, dim)
+            self.seq = normalize(self.seq)
+            fc1 = tf.layers.dense(self.seq, 1024, activation=tf.nn.relu)
+            fc2 = tf.layers.dense(fc1, 512, activation=tf.nn.relu)
+            fc3 = tf.layers.dense(fc2, 256, activation=tf.nn.relu)
+            self.user_eb = tf.layers.dense(fc3, hidden_size, activation=tf.nn.relu)
+            self.build_sampled_softmax_loss(self.item_eb, self.user_eb)
