@@ -11,7 +11,6 @@
       <change afterPath="$PROJECT_DIR$/SASRec/data/ml-1m_data/ml-1m_valid.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyComiRec/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyComiRec/src/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyComiRec/src/train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/data/DataProcessing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SASRec/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/SASRec/sas_model.py" afterDir="false" />

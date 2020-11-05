@@ -67,6 +67,36 @@ class Model(object):
 
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.lr).minimize(self.loss)
 
+    def choose_random_centroids(samples, n_clusters):
+        n_samples = tf.shape(samples)[0]
+        random_indices = tf.random_shuffle(tf.range(0, n_samples))
+        begin = [0, ]
+        size = [n_clusters, ]
+        size[0] = n_clusters
+        centroid_indices = tf.slice(random_indices, begin, size)
+        init_centroids = tf.gather(samples, centroid_indices)  # 通过索引将对应的向量取出来
+        # print(n_samples,init_centroids,samples.get_shape().as_list())
+        return init_centroids
+
+    def assign_to_nearest(samples, centroids):
+        vector = tf.expand_dims(samples, 0)
+        centroids = tf.expand_dims(centroids, 1)
+        error = tf.subtract(vector, centroids)
+        distances = tf.reduce_sum(tf.square(error), 2)
+        mins = tf.argmin(distances, 0)
+        nearest_indices = mins
+        return nearest_indices  # shape as len(samples), index of cluster for per sample
+
+    def update_centroids(samples, nearest_indices, n_clusters):
+        nearest_indices = tf.to_int32(nearest_indices)
+        partitions = tf.dynamic_partition(samples, nearest_indices,
+                                          n_clusters)  # 矩阵拆分,(data,partitions,number of partition)
+        # Partitions data into num_partitions tensors using indices from partitions.
+        # partitions Any shape: Indices in the range [0, num_partitions).
+        # number of partition: An int that is >= 1. The number of partitions to output.
+        new_centroids = tf.concat([tf.expand_dims(tf.reduce_mean(partition, 0), 0) for partition in partitions], 0)
+        return new_centroids
+
     # model.train(sess, list(data_iter) + [lr])
     def train(self, sess, inps):
         """
@@ -136,8 +166,8 @@ class Model_MSARec(Model):
         with tf.variable_scope("MSARec", reuse=tf.AUTO_REUSE) as scope:
 
             # Positional Encoding
-            # t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
-            # self.mid_his_batch_embedded += t
+            t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
+            self.mid_his_batch_embedded += t
 
             # Dropout
             self.seq = tf.layers.dropout(self.mid_his_batch_embedded,
@@ -170,26 +200,27 @@ class Model_MSARec(Model):
             self.dim = embedding_dim
 
             item_list_emb = tf.reshape(self.seq, [-1, seq_len, embedding_dim])
-            t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
-            item_list_add_pos = item_list_emb + t
+            # t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
+            # item_list_add_pos = item_list_emb + t
 
             num_heads = num_interest
             with tf.variable_scope("my_self_atten", reuse=tf.AUTO_REUSE) as scope:
                 # item_list_add_pos： （b, seq_len, embedding_dim)
                 # item_hidden: (b, sql_len, hidden_size * 4)
-                item_hidden = tf.layers.dense(item_list_add_pos, hidden_size * 4, activation=tf.nn.tanh)
+                # item_hidden = tf.layers.dense(item_list_add_pos, hidden_size * 4, activation=tf.nn.tanh)
+                item_hidden = tf.layers.dense(item_list_emb, hidden_size * 4, activation=tf.nn.tanh)
                 # item_att_w: (b, sql_len, num_heads)
                 item_att_w = tf.layers.dense(item_hidden, num_heads, activation=tf.nn.tanh)
                 # item_att_w: (b, num_heads, sql_len)
                 item_att_w = tf.transpose(item_att_w, [0, 2, 1])
 
                 # atten_mask: (b, num_heads, sql_len)
-                # atten_mask = tf.tile(tf.expand_dims(self.mask, axis=1), [1, num_heads, 1])
-                # paddings = tf.ones_like(atten_mask) * (-2 ** 32 + 1)
-                #
-                # # 对于填充的位置赋值极小值
-                # item_att_w = tf.where(tf.equal(atten_mask, 0), paddings, item_att_w)
-                # item_att_w = tf.nn.softmax(item_att_w)
+                atten_mask = tf.tile(tf.expand_dims(self.mask, axis=1), [1, num_heads, 1])
+                paddings = tf.ones_like(atten_mask) * (-2 ** 32 + 1)
+
+                # 对于填充的位置赋值极小值
+                item_att_w = tf.where(tf.equal(atten_mask, 0), paddings, item_att_w)
+                item_att_w = tf.nn.softmax(item_att_w)
 
                 # item_att_w [batch, num_heads, seq_len]
                 # item_list_emb [batch, seq_len, embedding_dim]
@@ -215,6 +246,8 @@ class Model_MSAK_means(Model):
                  seq_len=256, num_blocks=2):
         super(Model_MSAK_means, self).__init__(n_mid, embedding_dim, hidden_size,
                                                    batch_size, seq_len, flag="Model_MSAK_means")
+
+        embiggen_factor = 70
 
         with tf.variable_scope("MSAK_means", reuse=tf.AUTO_REUSE) as scope:
 
@@ -250,13 +283,15 @@ class Model_MSAK_means(Model):
             # (b, seq_len, dim)
             self.seq = normalize(self.seq)
 
-            self.dim = embedding_dim
-
             # item_list_emb = tf.reshape(self.seq, [-1, seq_len, embedding_dim])
             # t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
             # item_list_add_pos = item_list_emb + t
 
-            num_heads = num_interest
+            self.cluster_center = tf.placeholder(dtype=tf.float32, shape=[tf.shape(self.seq)[0], num_interest, embedding_dim])
+
+
+
+
 
 
 class Model_SASRec(Model):
