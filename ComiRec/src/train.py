@@ -13,7 +13,7 @@ import numpy as np
 import faiss
 import tensorflow as tf
 from data_iterator import DataIterator
-from model import *
+from comi_model import *
 from tensorboardX import SummaryWriter
 
 parser = argparse.ArgumentParser()
@@ -22,13 +22,18 @@ parser.add_argument('--dataset', type=str, default='book', help='book | taobao')
 parser.add_argument('--random_seed', type=int, default=19)
 parser.add_argument('--embedding_dim', type=int, default=64)
 parser.add_argument('--hidden_size', type=int, default=64)
-parser.add_argument('--num_interest', type=int, default=6)
+parser.add_argument('--num_interest', type=int, default=4)
 parser.add_argument('--model_type', type=str, default='none', help='DNN | GRU4REC | ..')
 parser.add_argument('--learning_rate', type=float, default=0.001, help='')
 parser.add_argument('--max_iter', type=int, default=1000, help='(k)')
 parser.add_argument('--patience', type=int, default=50)
 parser.add_argument('--coef', default=None)
-parser.add_argument('--topN', type=int, default=20)
+parser.add_argument('--topN', type=int, default=50)
+parser.add_argument('--test_iter', type=int, default=1000)
+parser.add_argument('--batch_size', type=int, default=128)
+parser.add_argument('--maxlen', type=int, default=50)
+parser.add_argument('--num_blocks', type=float, default=2)
+parser.add_argument('--dropout_rate', type=float, default=0.2)
 
 best_metric = 0
 
@@ -366,6 +371,17 @@ if __name__ == '__main__':
         batch_size = 128
         maxlen = 20
         test_iter = 1000
+    elif args.dataset == 'ml-1m':
+        path = '/content/dataset/ComiRec/data/ml-1m_data/'
+        item_count = 3417
+    elif args.dataset == 'ml-10m':
+        path = '/content/dataset/ComiRec/data/ml-10m_data/'
+        item_count = 10197
+
+    batch_size = args.batch_size
+    maxlen = args.maxlen
+    test_iter = args.test_iter
+
     
     train_file = path + args.dataset + '_train.txt'
     valid_file = path + args.dataset + '_valid.txt'

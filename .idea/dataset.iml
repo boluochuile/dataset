@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/MyComiRec/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MyComiRec/SAS" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/SASRec" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ComiRec/src" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (tensorflow) (4)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

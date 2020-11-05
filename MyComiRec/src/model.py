@@ -179,17 +179,17 @@ class Model_MSARec(Model):
                 # item_hidden: (b, sql_len, hidden_size * 4)
                 item_hidden = tf.layers.dense(item_list_add_pos, hidden_size * 4, activation=tf.nn.tanh)
                 # item_att_w: (b, sql_len, num_heads)
-                item_att_w = tf.layers.dense(item_hidden, num_heads, activation=None)
+                item_att_w = tf.layers.dense(item_hidden, num_heads, activation=tf.nn.tanh)
                 # item_att_w: (b, num_heads, sql_len)
                 item_att_w = tf.transpose(item_att_w, [0, 2, 1])
 
                 # atten_mask: (b, num_heads, sql_len)
-                atten_mask = tf.tile(tf.expand_dims(self.mask, axis=1), [1, num_heads, 1])
-                paddings = tf.ones_like(atten_mask) * (-2 ** 32 + 1)
-
-                # 对于填充的位置赋值极小值
-                item_att_w = tf.where(tf.equal(atten_mask, 0), paddings, item_att_w)
-                item_att_w = tf.nn.softmax(item_att_w)
+                # atten_mask = tf.tile(tf.expand_dims(self.mask, axis=1), [1, num_heads, 1])
+                # paddings = tf.ones_like(atten_mask) * (-2 ** 32 + 1)
+                #
+                # # 对于填充的位置赋值极小值
+                # item_att_w = tf.where(tf.equal(atten_mask, 0), paddings, item_att_w)
+                # item_att_w = tf.nn.softmax(item_att_w)
 
                 # item_att_w [batch, num_heads, seq_len]
                 # item_list_emb [batch, seq_len, embedding_dim]
@@ -210,52 +210,71 @@ class Model_MSARec(Model):
 
             self.build_sampled_softmax_loss(self.item_eb, readout)
 
+class Model_MSAK_means(Model):
+    def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, num_interest, dropout_rate=0.2,
+                 seq_len=256, num_blocks=2):
+        super(Model_MSARec, self).__init__(n_mid, embedding_dim, hidden_size,
+                                                   batch_size, seq_len, flag="MSARec")
 
-class Model_ComiRec_SA(Model):
-    # Model_ComiRec_SA(item_count, args.embedding_dim, args.hidden_size, batch_size, args.num_interest, maxlen)
-    def __init__(self, n_mid, embedding_dim, hidden_size, batch_size, num_interest, seq_len=256, add_pos=True):
-        super(Model_ComiRec_SA, self).__init__(n_mid, embedding_dim, hidden_size,
-                                                   batch_size, seq_len, flag="ComiRec_SA")
+        with tf.variable_scope("SASRec", reuse=tf.AUTO_REUSE) as scope:
 
-        self.dim = embedding_dim
-        item_list_emb = tf.reshape(self.item_his_eb, [-1, seq_len, embedding_dim])
-        if add_pos:
-            self.position_embedding = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
-            item_list_add_pos = item_list_emb + tf.tile(self.position_embedding, [tf.shape(item_list_emb)[0], 1, 1])
-        else:
-            item_list_add_pos = item_list_emb
+            # Positional Encoding
+            t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
+            self.mid_his_batch_embedded += t
 
-        num_heads = num_interest
-        with tf.variable_scope("self_atten", reuse=tf.AUTO_REUSE) as scope:
-            # item_list_add_pos： （b, seq_len, embedding_dim)
-            # item_hidden: (b, sql_len, hidden_size * 4)
-            item_hidden = tf.layers.dense(item_list_add_pos, hidden_size * 4, activation=tf.nn.tanh)
-            # item_att_w: (b, sql_len, num_heads)
-            item_att_w  = tf.layers.dense(item_hidden, num_heads, activation=None)
-            # item_att_w: (b, num_heads, sql_len)
-            item_att_w  = tf.transpose(item_att_w, [0, 2, 1])
+            # Dropout
+            self.seq = tf.layers.dropout(self.mid_his_batch_embedded,
+                                         rate=dropout_rate,
+                                         training=tf.convert_to_tensor(True))
+            self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
 
-            # atten_mask: (b, num_heads, sql_len)
-            atten_mask = tf.tile(tf.expand_dims(self.mask, axis=1), [1, num_heads, 1])
-            paddings = tf.ones_like(atten_mask) * (-2 ** 32 + 1)
+            # Build blocks
 
-            # 对于填充的位置赋值极小值
-            item_att_w = tf.where(tf.equal(atten_mask, 0), paddings, item_att_w)
-            item_att_w = tf.nn.softmax(item_att_w)
+            for i in range(num_blocks):
+                with tf.variable_scope("num_blocks_%d" % i):
 
-            # item_att_w [batch, num_heads, seq_len]
-            # item_list_emb [batch, seq_len, embedding_dim]
-            # interest_emb (batch, num_heads, embedding_dim)
-            interest_emb = tf.matmul(item_att_w, item_list_emb)
+                    # Self-attention
+                    self.seq = multihead_attention(queries=normalize(self.seq),
+                                                   keys=self.seq,
+                                                   num_units=hidden_size,
+                                                   num_heads=num_interest,
+                                                   dropout_rate=dropout_rate,
+                                                   is_training=True,
+                                                   causality=True,
+                                                   scope="self_attention")
 
-        self.user_eb = interest_emb
+                    # Feed forward
+                    self.seq = feedforward(normalize(self.seq), num_units=[hidden_size, hidden_size],
+                                           dropout_rate=dropout_rate, is_training=True)
+                    self.seq *= tf.reshape(self.mask, (-1, seq_len, 1))
+            # (b, seq_len, dim)
+            self.seq = normalize(self.seq)
 
-        # item_list_emb = [-1, seq_len, embedding_dim]
-        # atten: (batch, num_heads, dim) * (batch, dim, 1) = (batch, num_heads, 1)
-        atten = tf.matmul(self.user_eb, tf.reshape(self.item_eb, [get_shape(item_list_emb)[0], self.dim, 1]))
-        atten = tf.nn.softmax(tf.pow(tf.reshape(atten, [get_shape(item_list_emb)[0], num_heads]), 1))
+            self.dim = embedding_dim
 
-        # 找出与target item最相似的用户兴趣向量
-        readout = tf.gather(tf.reshape(self.user_eb, [-1, self.dim]), tf.argmax(atten, axis=1, output_type=tf.int32) + tf.range(tf.shape(item_list_emb)[0]) * num_heads)
+            # item_list_emb = tf.reshape(self.seq, [-1, seq_len, embedding_dim])
+            # t = tf.expand_dims(positional_encoding(embedding_dim, seq_len), axis=0)
+            # item_list_add_pos = item_list_emb + t
 
-        self.build_sampled_softmax_loss(self.item_eb, readout)
+            num_heads = num_interest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
